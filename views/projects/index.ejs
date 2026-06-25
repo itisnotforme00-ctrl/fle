@@ -1,0 +1,123 @@
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <h2 style="font-size: 1.2rem; font-weight: 600;">Projects</h2>
+  <button class="btn btn-primary" onclick="toggleModal()">
+    <span>+</span> Add Project
+  </button>
+</div>
+
+<div class="card">
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Project</th>
+          <th>Client</th>
+          <th>Status</th>
+          <th>Start Date</th>
+          <th>Deadline</th>
+          <th style="text-align: right;">Total Value</th>
+          <th style="text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (projects.length === 0) { %>
+          <tr>
+            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px;">
+              No projects yet. <a href="#" onclick="toggleModal(); return false;">Add your first project</a>
+            </td>
+          </tr>
+        <% } else { %>
+          <% projects.forEach(project => { %>
+            <tr>
+              <td><strong><a href="/projects/<%= project.id %>"><%= project.title %></a></strong></td>
+              <td><%= project.client_name %></td>
+              <td>
+                <span class="badge badge-<%= project.status === 'completed' ? 'green' : project.status === 'on hold' ? 'red' : project.status === 'review' ? 'blue' : 'amber' %>">
+                  <%= project.status %>
+                </span>
+              </td>
+              <td><%= project.start_date ? new Date(project.start_date).toLocaleDateString() : '-' %></td>
+              <td><%= project.deadline ? new Date(project.deadline).toLocaleDateString() : '-' %></td>
+              <td style="text-align: right; font-weight: 600;">$<%= project.total_value.toLocaleString() %></td>
+              <td style="text-align: right;">
+                <a href="/projects/<%= project.id %>" class="btn btn-sm btn-secondary">Manage</a>
+              </td>
+            </tr>
+          <% }) %>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Project Modal -->
+<div class="modal-overlay" id="addProjectModal" style="display: none;">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Add New Project</h3>
+      <button class="modal-close" onclick="toggleModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form action="/projects" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Project Title *</label>
+            <input type="text" name="title" class="form-input" required placeholder="e.g. E-Commerce Platform">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Client Name *</label>
+            <input type="text" name="client_name" class="form-input" required placeholder="Company or client name">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea name="description" class="form-textarea" rows="3" placeholder="Project overview..."></textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Start Date</label>
+            <input type="date" name="start_date" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Deadline</label>
+            <input type="date" name="deadline" class="form-input">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Total Value ($)</label>
+            <input type="number" name="total_value" class="form-input" placeholder="25000" min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-select">
+              <option value="in progress">In Progress</option>
+              <option value="review">Review</option>
+              <option value="on hold">On Hold</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" onclick="toggleModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleModal() {
+    const modal = document.getElementById('addProjectModal');
+    modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
+  }
+  
+  document.getElementById('addProjectModal').addEventListener('click', function(e) {
+    if (e.target === this) toggleModal();
+  });
+</script>

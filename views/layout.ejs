@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title ? title + ' | DevHunt' : 'DevHunt' %></title>
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+  <% if (typeof hideLayout !== 'undefined' && hideLayout) { %>
+    <%- body %>
+  <% } else { %>
+    <div class="app-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+          <a href="/dashboard">
+            <div class="logo-icon">&lt;/&gt;</div>
+            DevHunt
+          </a>
+        </div>
+        
+        <nav class="sidebar-nav">
+          <a href="/dashboard" class="nav-link <%= title === 'Dashboard' ? 'active' : '' %>">
+            <span class="icon">&#9638;</span>
+            Dashboard
+          </a>
+          <a href="/leads" class="nav-link <%= title === 'Client Leads' ? 'active' : '' %>">
+            <span class="icon">&#9733;</span>
+            Leads
+          </a>
+          <a href="/proposals" class="nav-link <%= title === 'Proposals' ? 'active' : '' %>">
+            <span class="icon">&#9998;</span>
+            Proposals
+          </a>
+          <a href="/projects" class="nav-link <%= title === 'Projects' ? 'active' : '' %>">
+            <span class="icon">&#9630;</span>
+            Projects
+          </a>
+          <a href="/calculator" class="nav-link <%= title === 'Rate Calculator' ? 'active' : '' %>">
+            <span class="icon">&#128;</span>
+            Rate Calculator
+          </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+          <a href="/profile" class="nav-link <%= title === 'Profile' ? 'active' : '' %>" style="margin-bottom: 4px;">
+            <span class="icon">&#9786;</span>
+            Profile
+          </a>
+          <a href="/logout" class="nav-link">
+            <span class="icon">&#8592;</span>
+            Logout
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <div class="topbar">
+          <button class="mobile-toggle" onclick="toggleSidebar()">&#9776;</button>
+          <h1><%= title %></h1>
+          <div class="topbar-actions">
+            <% if (user) { %>
+              <div class="user-info" style="padding: 0;">
+                <div class="user-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+                <div class="user-meta">
+                  <div class="user-name"><%= user.name %></div>
+                  <div class="user-role"><%= user.role %></div>
+                </div>
+              </div>
+            <% } %>
+          </div>
+        </div>
+        
+        <%- body %>
+      </main>
+    </div>
+  <% } %>
+
+  <script src="/js/main.js"></script>
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+    
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(e) {
+      const sidebar = document.getElementById('sidebar');
+      const toggle = document.querySelector('.mobile-toggle');
+      if (window.innerWidth <= 768 && sidebar.classList.contains('open')) {
+        if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+          sidebar.classList.remove('open');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

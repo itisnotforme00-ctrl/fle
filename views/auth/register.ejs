@@ -1,0 +1,64 @@
+<% var hideLayout = true; %>
+
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="logo">
+      <div class="logo-icon" style="width: 40px; height: 40px; font-size: 1.2rem;">&lt;/&gt;</div>
+      DevHunt
+    </div>
+    <p class="subtitle">Create your developer account</p>
+
+    <% if (error) { %>
+      <div class="alert-error"><%= error %></div>
+    <% } %>
+
+    <form action="/register" method="POST">
+      <div class="form-group">
+        <label class="form-label">Full Name *</label>
+        <input type="text" name="name" class="form-input" required placeholder="Your full name" 
+               value="<%= form && form.name ? form.name : '' %>" autofocus>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input type="email" name="email" class="form-input" required placeholder="you@example.com"
+               value="<%= form && form.email ? form.email : '' %>">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Password *</label>
+        <input type="password" name="password" class="form-input" required placeholder="Min 6 characters" minlength="6">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Role *</label>
+          <select name="role" class="form-select" required>
+            <option value="">Select role</option>
+            <option value="backend" <%= form && form.role === 'backend' ? 'selected' : '' %>>Backend</option>
+            <option value="frontend" <%= form && form.role === 'frontend' ? 'selected' : '' %>>Frontend</option>
+            <option value="fullstack" <%= form && form.role === 'fullstack' ? 'selected' : '' %>>Fullstack</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Hourly Rate ($)</label>
+          <input type="number" name="hourly_rate" class="form-input" placeholder="75" min="0"
+                 value="<%= form && form.hourly_rate ? form.hourly_rate : '' %>">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Primary Stack</label>
+        <input type="text" name="stack" class="form-input" placeholder="e.g. Node.js, React, PostgreSQL"
+               value="<%= form && form.stack ? form.stack : '' %>">
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+    </form>
+
+    <div class="auth-footer">
+      Already have an account? <a href="/login">Sign In</a>
+    </div>
+  </div>
+</div>

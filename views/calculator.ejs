@@ -1,0 +1,128 @@
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+  <!-- Calculator Form -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Rate Calculator</h3>
+    </div>
+    
+    <form action="/calculator" method="POST" id="calcForm">
+      <div class="form-group">
+        <label class="form-label">Years of Experience: <span class="slider-value" id="xpValue"><%= form && form.years ? form.years : '5' %></span></label>
+        <input type="range" name="years" min="1" max="20" value="<%= form && form.years ? form.years : '5' %>" 
+               oninput="document.getElementById('xpValue').textContent = this.value">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Role</label>
+        <select name="role" class="form-select">
+          <option value="backend" <%= form && form.role === 'backend' ? 'selected' : '' %>>Backend</option>
+          <option value="frontend" <%= form && form.role === 'frontend' ? 'selected' : '' %>>Frontend</option>
+          <option value="fullstack" <%= form && form.role === 'fullstack' ? 'selected' : '' %> selected>Fullstack</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Primary Stack (select all that apply)</label>
+        <div class="checkbox-group">
+          <% const stacks = ['Node.js','React','Python','Go','Rust','PostgreSQL','AWS','Docker','Kubernetes','TypeScript','GraphQL','Redis']; %>
+          <% const selectedStacks = form && form.stack ? (Array.isArray(form.stack) ? form.stack : [form.stack]) : []; %>
+          <% stacks.forEach(s => { %>
+            <label class="checkbox-item">
+              <input type="checkbox" name="stack" value="<%= s %>" <%= selectedStacks.includes(s) ? 'checked' : '' %>>
+              <%= s %>
+            </label>
+          <% }) %>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Region</label>
+          <select name="region" class="form-select">
+            <option value="North America" <%= form && form.region === 'North America' ? 'selected' : '' %> selected>North America</option>
+            <option value="Europe" <%= form && form.region === 'Europe' ? 'selected' : '' %>>Europe</option>
+            <option value="Southeast Asia" <%= form && form.region === 'Southeast Asia' ? 'selected' : '' %>>Southeast Asia</option>
+            <option value="South Asia" <%= form && form.region === 'South Asia' ? 'selected' : '' %>>South Asia</option>
+            <option value="LatAm" <%= form && form.region === 'LatAm' ? 'selected' : '' %>>Latin America</option>
+            <option value="Africa" <%= form && form.region === 'Africa' ? 'selected' : '' %>>Africa</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Work Type</label>
+          <select name="work_type" class="form-select">
+            <option value="freelance" <%= form && form.work_type === 'freelance' ? 'selected' : '' %> selected>Freelance</option>
+            <option value="contract" <%= form && form.work_type === 'contract' ? 'selected' : '' %>>Contract</option>
+            <option value="consulting" <%= form && form.work_type === 'consulting' ? 'selected' : '' %>>Consulting</option>
+          </select>
+        </div>
+      </div>
+      
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Calculate My Rate</button>
+    </form>
+  </div>
+  
+  <!-- Results -->
+  <div>
+    <% if (result) { %>
+      <div class="result-box">
+        <div class="rate-display">
+          <div class="rate-label">Recommended Hourly Rate</div>
+          <div class="rate-value">$<%= result.recommendedRate %></div>
+          <div style="color: var(--text-secondary); margin-top: 8px;">
+            Range: $<%= result.minRate %> — $<%= result.maxRate %>/hr
+          </div>
+        </div>
+        
+        <div class="income-grid">
+          <div class="income-card">
+            <div class="amount">$<%= result.monthly20.toLocaleString() %></div>
+            <div class="label">at 20 hrs/week</div>
+          </div>
+          <div class="income-card">
+            <div class="amount">$<%= result.monthly40.toLocaleString() %></div>
+            <div class="label">at 40 hrs/week</div>
+          </div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+          <h4 style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">
+            vs Upwork Average
+          </h4>
+          <table class="comparison-table">
+            <tr>
+              <td>Your Rate</td>
+              <td style="color: var(--accent); font-weight: 700;">$<%= result.recommendedRate %>/hr</td>
+            </tr>
+            <tr>
+              <td>Upwork Avg (<%= form && form.role ? form.role : 'fullstack' %>)</td>
+              <td>$<%= result.upworkAvg %>/hr</td>
+            </tr>
+            <tr>
+              <td>Difference</td>
+              <td style="color: var(--<%= parseInt(result.vsUpwork) >= 0 ? 'success' : 'danger' %>);">
+                <%= parseInt(result.vsUpwork) >= 0 ? '+' : '' %><%= result.vsUpwork %>%
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      
+      <div class="card" style="margin-top: 20px;">
+        <div class="card-header">
+          <h3 class="card-title">Negotiation Tips</h3>
+        </div>
+        <ul class="tips-list">
+          <% result.tips.forEach(tip => { %>
+            <li><span style="color: var(--accent); flex-shrink: 0;">&#9733;</span> <%= tip %></li>
+          <% }) %>
+        </ul>
+      </div>
+    <% } else { %>
+      <div class="card" style="text-align: center; padding: 60px 20px;">
+        <div style="font-size: 3rem; margin-bottom: 16px;">&#128;</div>
+        <h3 style="margin-bottom: 8px; color: var(--text-primary);">Find Your Rate</h3>
+        <p style="color: var(--text-secondary);">Fill out the form to get your personalized rate recommendation.</p>
+      </div>
+    <% } %>
+  </div>
+</div>

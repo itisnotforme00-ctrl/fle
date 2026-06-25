@@ -1,0 +1,164 @@
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <h2 style="font-size: 1.2rem; font-weight: 600;">All Leads</h2>
+  <button class="btn btn-primary" onclick="toggleModal()">
+    <span>+</span> Add Lead
+  </button>
+</div>
+
+<!-- Filter Tabs -->
+<div class="filter-tabs">
+  <a href="/leads" class="filter-tab <%= filter === 'all' ? 'active' : '' %>">
+    All (<%= statusCounts.all || 0 %>)
+  </a>
+  <a href="/leads?status=new" class="filter-tab <%= filter === 'new' ? 'active' : '' %>">
+    New (<%= statusCounts['new'] || 0 %>)
+  </a>
+  <a href="/leads?status=contacted" class="filter-tab <%= filter === 'contacted' ? 'active' : '' %>">
+    Contacted (<%= statusCounts['contacted'] || 0 %>)
+  </a>
+  <a href="/leads?status=proposal+sent" class="filter-tab <%= filter === 'proposal sent' ? 'active' : '' %>">
+    Proposal Sent (<%= statusCounts['proposal sent'] || 0 %>)
+  </a>
+  <a href="/leads?status=negotiating" class="filter-tab <%= filter === 'negotiating' ? 'active' : '' %>">
+    Negotiating (<%= statusCounts['negotiating'] || 0 %>)
+  </a>
+  <a href="/leads?status=won" class="filter-tab <%= filter === 'won' ? 'active' : '' %>">
+    Won (<%= statusCounts['won'] || 0 %>)
+  </a>
+  <a href="/leads?status=lost" class="filter-tab <%= filter === 'lost' ? 'active' : '' %>">
+    Lost (<%= statusCounts['lost'] || 0 %>)
+  </a>
+</div>
+
+<!-- Leads Table -->
+<div class="card">
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Contact</th>
+          <th>Email</th>
+          <th>Stack Needed</th>
+          <th>Source</th>
+          <th>Status</th>
+          <th>Added</th>
+          <th style="text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (leads.length === 0) { %>
+          <tr>
+            <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 40px;">
+              No leads found. <a href="#" onclick="toggleModal(); return false;">Add your first lead</a>
+            </td>
+          </tr>
+        <% } else { %>
+          <% leads.forEach(lead => { %>
+            <tr>
+              <td><strong><%= lead.company %></strong></td>
+              <td><%= lead.contact_name %></td>
+              <td><%= lead.email || '-' %></td>
+              <td><%= lead.stack_needed || '-' %></td>
+              <td><%= lead.source || '-' %></td>
+              <td>
+                <form action="/leads/<%= lead.id %>/status" method="POST" style="display: inline;">
+                  <select name="status" class="status-select" onchange="this.form.submit()" 
+                          title="Click to change status">
+                    <option value="new" <%= lead.status === 'new' ? 'selected' : '' %>>New</option>
+                    <option value="contacted" <%= lead.status === 'contacted' ? 'selected' : '' %>>Contacted</option>
+                    <option value="proposal sent" <%= lead.status === 'proposal sent' ? 'selected' : '' %>>Proposal Sent</option>
+                    <option value="negotiating" <%= lead.status === 'negotiating' ? 'selected' : '' %>>Negotiating</option>
+                    <option value="won" <%= lead.status === 'won' ? 'selected' : '' %>>Won</option>
+                    <option value="lost" <%= lead.status === 'lost' ? 'selected' : '' %>>Lost</option>
+                  </select>
+                </form>
+              </td>
+              <td><%= new Date(lead.created_at).toLocaleDateString() %></td>
+              <td style="text-align: right;">
+                <form action="/leads/<%= lead.id %>/delete" method="POST" style="display: inline;" 
+                      onsubmit="return confirm('Delete this lead?');">
+                  <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Lead Modal -->
+<div class="modal-overlay" id="addLeadModal" style="display: none;">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Add New Lead</h3>
+      <button class="modal-close" onclick="toggleModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form action="/leads" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Company *</label>
+            <input type="text" name="company" class="form-input" required placeholder="Company name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contact Name *</label>
+            <input type="text" name="contact_name" class="form-input" required placeholder="Full name">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-input" placeholder="contact@company.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input type="text" name="phone" class="form-input" placeholder="+1-555-0100">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Stack Needed</label>
+            <input type="text" name="stack_needed" class="form-input" placeholder="e.g. Node.js, React">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Source</label>
+            <select name="source" class="form-select">
+              <option value="Other">Other</option>
+              <option value="LinkedIn">LinkedIn</option>
+              <option value="GitHub">GitHub</option>
+              <option value="Referral">Referral</option>
+              <option value="Cold Outreach">Cold Outreach</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Notes</label>
+          <textarea name="notes" class="form-textarea" rows="3" placeholder="Any additional notes about this lead..."></textarea>
+        </div>
+        
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" onclick="toggleModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Lead</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleModal() {
+    const modal = document.getElementById('addLeadModal');
+    modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
+  }
+  
+  // Close modal on overlay click
+  document.getElementById('addLeadModal').addEventListener('click', function(e) {
+    if (e.target === this) toggleModal();
+  });
+</script>

@@ -1,0 +1,40 @@
+<% var hideLayout = true; %>
+
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="logo">
+      <div class="logo-icon" style="width: 40px; height: 40px; font-size: 1.2rem;">&lt;/&gt;</div>
+      DevHunt
+    </div>
+    <p class="subtitle">Sign in to your account</p>
+
+    <% if (error) { %>
+      <div class="alert-error"><%= error %></div>
+    <% } %>
+
+    <form action="/login" method="POST">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-input" required placeholder="you@example.com" autofocus>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-input" required placeholder="Enter your password">
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+    </form>
+
+    <div class="auth-footer">
+      Don't have an account? <a href="/register">Register</a>
+    </div>
+    
+    <div style="text-align: center; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Demo credentials:</p>
+      <p style="font-size: 0.8rem; color: var(--text-secondary);">
+        <strong>demo@devhunt.com</strong> / <strong>demo1234</strong>
+      </p>
+    </div>
+  </div>
+</div>

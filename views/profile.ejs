@@ -1,0 +1,101 @@
+<div class="profile-grid">
+  <!-- Left: Edit Form -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Edit Profile</h3>
+    </div>
+    
+    <% if (success) { %>
+      <div class="alert-success"><%= success %></div>
+    <% } %>
+    
+    <form action="/profile" method="POST">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" name="name" class="form-input" value="<%= user.name %>" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" name="email" class="form-input" value="<%= user.email %>" required>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select name="role" class="form-select">
+            <option value="backend" <%= user.role === 'backend' ? 'selected' : '' %>>Backend</option>
+            <option value="frontend" <%= user.role === 'frontend' ? 'selected' : '' %>>Frontend</option>
+            <option value="fullstack" <%= user.role === 'fullstack' ? 'selected' : '' %>>Fullstack</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hourly Rate ($)</label>
+          <input type="number" name="hourly_rate" class="form-input" value="<%= user.hourly_rate %>" min="0" step="0.01">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Primary Stack</label>
+        <input type="text" name="stack" class="form-input" value="<%= user.stack || '' %>" placeholder="e.g. Node.js, React, PostgreSQL">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Bio</label>
+        <textarea name="bio" class="form-textarea" rows="3" placeholder="Short bio for proposals..."><%= user.bio || '' %></textarea>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">GitHub URL</label>
+          <input type="url" name="github_url" class="form-input" value="<%= user.github_url || '' %>" placeholder="https://github.com/username">
+        </div>
+        <div class="form-group">
+          <label class="form-label">LinkedIn URL</label>
+          <input type="url" name="linkedin_url" class="form-input" value="<%= user.linkedin_url || '' %>" placeholder="https://linkedin.com/in/username">
+        </div>
+      </div>
+      
+      <div style="text-align: right;">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+  
+  <!-- Right: Stats Card -->
+  <div>
+    <div class="card" style="text-align: center;">
+      <div class="profile-avatar">
+        <div class="avatar-circle"><%= user.name.charAt(0).toUpperCase() %></div>
+        <h3 style="margin-top: 12px;"><%= user.name %></h3>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; text-transform: capitalize;"><%= user.role %> Developer</p>
+        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">Member since <%= new Date(user.created_at).toLocaleDateString() %></p>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Your Stats</h3>
+      </div>
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <div class="value"><%= stats.totalLeadsAdded %></div>
+          <div class="label">Leads Added</div>
+        </div>
+        <div class="profile-stat">
+          <div class="value"><%= stats.proposalsSent %></div>
+          <div class="label">Proposals Sent</div>
+        </div>
+        <div class="profile-stat">
+          <div class="value"><%= stats.projectsCompleted %></div>
+          <div class="label">Projects Done</div>
+        </div>
+        <div class="profile-stat">
+          <div class="value">$<%= stats.totalRevenue.toLocaleString() %></div>
+          <div class="label">Revenue Earned</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

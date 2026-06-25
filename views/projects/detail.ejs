@@ -1,0 +1,183 @@
+<!-- Back Link -->
+<div style="margin-bottom: 16px;">
+  <a href="/projects" class="btn btn-sm btn-secondary">&larr; All Projects</a>
+</div>
+
+<!-- Project Header -->
+<div class="card">
+  <div class="project-header">
+    <div>
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+        <h2 style="font-size: 1.4rem;"><%= project.title %></h2>
+        <span class="badge badge-<%= project.status === 'completed' ? 'green' : project.status === 'on hold' ? 'red' : project.status === 'review' ? 'blue' : 'amber' %>">
+          <%= project.status %>
+        </span>
+      </div>
+      <p style="color: var(--text-secondary);"><%= project.description || 'No description provided.' %></p>
+    </div>
+  </div>
+  
+  <div class="project-meta">
+    <div class="meta-item">
+      <span class="label">Client</span>
+      <span class="value"><%= project.client_name %></span>
+    </div>
+    <div class="meta-item">
+      <span class="label">Start Date</span>
+      <span class="value"><%= project.start_date ? new Date(project.start_date).toLocaleDateString() : 'Not set' %></span>
+    </div>
+    <div class="meta-item">
+      <span class="label">Deadline</span>
+      <span class="value"><%= project.deadline ? new Date(project.deadline).toLocaleDateString() : 'Not set' %></span>
+    </div>
+    <div class="meta-item">
+      <span class="label">Total Value</span>
+      <span class="value" style="color: var(--accent); font-weight: 700;">$<%= project.total_value.toLocaleString() %></span>
+    </div>
+    <div class="meta-item">
+      <span class="label">Invoiced</span>
+      <span class="value">$<%= totalInvoiced.toLocaleString() %> <small style="color: var(--text-muted);">($<%= totalPaid.toLocaleString() %> paid)</small></span>
+    </div>
+  </div>
+</div>
+
+<div class="detail-grid">
+  <!-- Left Column: Milestones & Notes -->
+  <div>
+    <!-- Milestones -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Milestones</h3>
+        <span style="color: var(--text-muted); font-size: 0.85rem;">
+          <%= milestones.filter(m => m.status === 'complete').length %>/<%= milestones.length %> complete
+        </span>
+      </div>
+      
+      <div class="milestone-list">
+        <% if (milestones.length === 0) { %>
+          <p style="color: var(--text-muted); text-align: center; padding: 20px;">No milestones yet.</p>
+        <% } else { %>
+          <% milestones.forEach(m => { %>
+            <div class="milestone-item">
+              <form action="/projects/<%= project.id %>/milestones/<%= m.id %>/toggle" method="POST" style="display: inline;">
+                <button type="submit" class="milestone-check <%= m.status === 'complete' ? 'complete' : '' %>" title="Toggle status">
+                  <% if (m.status === 'complete') { %>&#10003;<% } %>
+                </button>
+              </form>
+              <div class="milestone-content">
+                <div class="milestone-title <%= m.status === 'complete' ? 'complete' : '' %>"><%= m.title %></div>
+                <% if (m.due_date) { %>
+                  <div class="milestone-date">Due: <%= new Date(m.due_date).toLocaleDateString() %></div>
+                <% } %>
+              </div>
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+      
+      <!-- Add Milestone Form -->
+      <form action="/projects/<%= project.id %>/milestones" method="POST" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+        <div style="display: flex; gap: 10px;">
+          <input type="text" name="title" class="form-input" placeholder="New milestone..." required style="flex: 1;">
+          <input type="date" name="due_date" class="form-input" style="width: 140px;">
+          <button type="submit" class="btn btn-primary btn-sm">Add</button>
+        </div>
+      </form>
+    </div>
+    
+    <!-- Notes -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Notes & Activity Log</h3>
+      </div>
+      
+      <!-- Add Note -->
+      <form action="/projects/<%= project.id %>/notes" method="POST" style="margin-bottom: 16px;">
+        <textarea name="content" class="form-textarea" rows="2" placeholder="Add a note or log an update..." required></textarea>
+        <div style="text-align: right; margin-top: 8px;">
+          <button type="submit" class="btn btn-primary btn-sm">Add Note</button>
+        </div>
+      </form>
+      
+      <!-- Notes List -->
+      <div class="notes-list">
+        <% if (notes.length === 0) { %>
+          <p style="color: var(--text-muted); text-align: center; padding: 20px;">No notes yet.</p>
+        <% } else { %>
+          <% notes.forEach(note => { %>
+            <div class="note-item">
+              <div class="note-content"><%= note.content %></div>
+              <div class="note-time"><%= new Date(note.created_at).toLocaleString() %></div>
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Right Column: Invoices -->
+  <div>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Invoices</h3>
+      </div>
+      
+      <!-- Add Invoice -->
+      <form action="/projects/<%= project.id %>/invoices" method="POST" style="margin-bottom: 16px;">
+        <div style="display: flex; gap: 10px;">
+          <input type="number" name="amount" class="form-input" placeholder="Amount ($)" required min="0.01" step="0.01" style="flex: 1;">
+          <input type="date" name="issued_date" class="form-input" style="width: 130px;">
+          <button type="submit" class="btn btn-primary btn-sm">Add</button>
+        </div>
+      </form>
+      
+      <!-- Invoice List -->
+      <div class="invoice-list">
+        <% if (invoices.length === 0) { %>
+          <p style="color: var(--text-muted); text-align: center; padding: 20px;">No invoices yet.</p>
+        <% } else { %>
+          <% invoices.forEach(inv => { %>
+            <div class="invoice-item">
+              <div>
+                <div class="invoice-amount" style="color: var(--<%= inv.payment_status === 'paid' ? 'success' : 'text-primary' %>);">
+                  $<%= inv.amount.toLocaleString() %>
+                </div>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">
+                  <%= inv.issued_date ? new Date(inv.issued_date).toLocaleDateString() : new Date(inv.created_at).toLocaleDateString() %>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge badge-<%= inv.payment_status === 'paid' ? 'green' : 'gray' %>">
+                  <%= inv.payment_status %>
+                </span>
+                <% if (inv.payment_status === 'unpaid') { %>
+                  <form action="/projects/<%= project.id %>/invoices/<%= inv.id %>/pay" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-sm btn-success" title="Mark as paid">&#10003;</button>
+                  </form>
+                <% } %>
+              </div>
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+      
+      <!-- Invoice Summary -->
+      <% if (invoices.length > 0) { %>
+        <div class="invoice-summary">
+          <div style="flex: 1;">
+            <div style="font-size: 0.78rem; color: var(--text-muted);">Total Invoiced</div>
+            <div style="font-weight: 600;">$<%= totalInvoiced.toLocaleString() %></div>
+          </div>
+          <div style="flex: 1;">
+            <div style="font-size: 0.78rem; color: var(--text-muted);">Total Paid</div>
+            <div style="font-weight: 600; color: var(--success);">$<%= totalPaid.toLocaleString() %></div>
+          </div>
+          <div style="flex: 1;">
+            <div style="font-size: 0.78rem; color: var(--text-muted);">Outstanding</div>
+            <div style="font-weight: 600; color: var(--warning);">$<%= (totalInvoiced - totalPaid).toLocaleString() %></div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>

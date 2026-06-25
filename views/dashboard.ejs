@@ -1,0 +1,117 @@
+<!-- Stats Grid -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon">&#9733;</div>
+    <div class="stat-label">Total Leads</div>
+    <div class="stat-value"><%= stats.totalLeads %></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">&#9630;</div>
+    <div class="stat-label">Active Projects</div>
+    <div class="stat-value"><%= stats.activeProjects %></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">&#9998;</div>
+    <div class="stat-label">Proposals Sent</div>
+    <div class="stat-value"><%= stats.proposalsSent %></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">&#128;</div>
+    <div class="stat-label">Est. Monthly Revenue</div>
+    <div class="stat-value">$<%= stats.monthlyRevenue.toLocaleString() %></div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Quick Actions</h3>
+  </div>
+  <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+    <a href="/leads" class="btn btn-primary">
+      <span>+</span> Add Lead
+    </a>
+    <a href="/proposals/new" class="btn btn-secondary">
+      <span>&#9998;</span> New Proposal
+    </a>
+    <a href="/projects" class="btn btn-secondary">
+      <span>&#9630;</span> New Project
+    </a>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+  <!-- Recent Leads -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Recent Leads</h3>
+      <a href="/leads" class="btn btn-sm btn-secondary">View All</a>
+    </div>
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Contact</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (recentLeads.length === 0) { %>
+            <tr><td colspan="3" style="color: var(--text-muted); text-align: center;">No leads yet. <a href="/leads">Add your first lead</a></td></tr>
+          <% } else { %>
+            <% recentLeads.forEach(lead => { %>
+              <tr>
+                <td><%= lead.company %></td>
+                <td><%= lead.contact_name %></td>
+                <td>
+                  <span class="badge badge-<%= lead.status === 'new' ? 'gray' : lead.status === 'contacted' ? 'blue' : lead.status === 'won' ? 'green' : lead.status === 'lost' ? 'red' : 'amber' %>">
+                    <%= lead.status %>
+                  </span>
+                </td>
+              </tr>
+            <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Recent Projects -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Recent Projects</h3>
+      <a href="/projects" class="btn btn-sm btn-secondary">View All</a>
+    </div>
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Client</th>
+            <th>Status</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (recentProjects.length === 0) { %>
+            <tr><td colspan="4" style="color: var(--text-muted); text-align: center;">No projects yet. <a href="/projects">Add your first project</a></td></tr>
+          <% } else { %>
+            <% recentProjects.forEach(project => { %>
+              <tr>
+                <td><a href="/projects/<%= project.id %>"><%= project.title %></a></td>
+                <td><%= project.client_name %></td>
+                <td>
+                  <span class="badge badge-<%= project.status === 'completed' ? 'green' : project.status === 'on hold' ? 'red' : project.status === 'review' ? 'blue' : 'amber' %>">
+                    <%= project.status %>
+                  </span>
+                </td>
+                <td>$<%= project.total_value.toLocaleString() %></td>
+              </tr>
+            <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

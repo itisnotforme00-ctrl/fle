@@ -1,0 +1,68 @@
+<div class="card" style="max-width: 700px;">
+  <div class="card-header">
+    <h3 class="card-title">Create New Proposal</h3>
+  </div>
+  
+  <% if (error) { %>
+    <div class="alert-error" style="margin-bottom: 16px;"><%= error %></div>
+  <% } %>
+
+  <form action="/proposals" method="POST">
+    <div class="form-group">
+      <label class="form-label">Select Lead</label>
+      <select name="lead_id" class="form-select">
+        <option value="">No lead (direct proposal)</option>
+        <% leads.forEach(lead => { %>
+          <option value="<%= lead.id %>"><%= lead.company %> — <%= lead.contact_name %></option>
+        <% }) %>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Project Title *</label>
+      <input type="text" name="title" class="form-input" required placeholder="e.g. E-Commerce Platform Redesign">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Project Description *</label>
+      <textarea name="description" class="form-textarea" rows="4" required placeholder="Describe the project scope, goals, and deliverables..."></textarea>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Tech Stack</label>
+      <input type="text" name="tech_stack" class="form-input" placeholder="e.g. Node.js, React, PostgreSQL, AWS">
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Estimated Hours *</label>
+        <input type="number" name="estimated_hours" class="form-input" required placeholder="120" min="1">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hourly Rate ($) *</label>
+        <input type="number" name="hourly_rate" class="form-input" required value="<%= hourlyRate || '' %>" min="1">
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Timeline (weeks)</label>
+        <input type="number" name="timeline_weeks" class="form-input" placeholder="8" min="1">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Payment Terms</label>
+        <select name="payment_terms" class="form-select">
+          <option value="milestone-based">Milestone-based</option>
+          <option value="50% upfront">50% Upfront</option>
+          <option value="30-70 split">30-70 Split</option>
+          <option value="net-30">Net-30</option>
+        </select>
+      </div>
+    </div>
+    
+    <div style="display: flex; gap: 12px; justify-content: flex-end;">
+      <a href="/proposals" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn btn-primary">Generate Proposal</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,49 @@
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <h2 style="font-size: 1.2rem; font-weight: 600;">Proposals</h2>
+  <a href="/proposals/new" class="btn btn-primary">
+    <span>+</span> New Proposal
+  </a>
+</div>
+
+<div class="card">
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Project Title</th>
+          <th>Client</th>
+          <th>Tech Stack</th>
+          <th>Hours</th>
+          <th>Rate</th>
+          <th>Total</th>
+          <th>Timeline</th>
+          <th style="text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (proposals.length === 0) { %>
+          <tr>
+            <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 40px;">
+              No proposals yet. <a href="/proposals/new">Create your first proposal</a>
+            </td>
+          </tr>
+        <% } else { %>
+          <% proposals.forEach(prop => { %>
+            <tr>
+              <td><strong><%= prop.title %></strong></td>
+              <td><%= prop.company || 'Direct' %> <% if (prop.contact_name) { %>(<%= prop.contact_name %>)<% } %></td>
+              <td><%= prop.tech_stack || '-' %></td>
+              <td><%= prop.estimated_hours %>h</td>
+              <td>$<%= prop.hourly_rate %>/hr</td>
+              <td style="font-weight: 600; color: var(--accent);">$<%= Math.round(prop.estimated_hours * prop.hourly_rate).toLocaleString() %></td>
+              <td><%= prop.timeline_weeks %> weeks</td>
+              <td style="text-align: right;">
+                <a href="/proposals/<%= prop.id %>" class="btn btn-sm btn-secondary">View</a>
+              </td>
+            </tr>
+          <% }) %>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>

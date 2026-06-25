@@ -1,0 +1,181 @@
+<div style="margin-bottom: 20px;">
+  <a href="/proposals" class="btn btn-sm btn-secondary">&larr; Back to Proposals</a>
+</div>
+
+<div class="proposal-preview" id="proposalContent">
+  <div class="proposal-header">
+    <h2>PROPOSAL</h2>
+    <p style="color: var(--text-muted); font-size: 0.9rem;"><%= proposal.title %></p>
+    <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">
+      Prepared by <%= user.name %> &bull; <%= new Date().toLocaleDateString() %>
+    </p>
+  </div>
+
+  <!-- Developer Info -->
+  <div class="proposal-section">
+    <h4>From</h4>
+    <p><strong><%= user.name %></strong> — <%= user.role.charAt(0).toUpperCase() + user.role.slice(1) %> Developer</p>
+    <% if (user.bio) { %><p><%= user.bio %></p><% } %>
+    <p style="margin-top: 6px;">
+      <% if (user.email) { %><span style="margin-right: 16px;">&#9993; <%= user.email %></span><% } %>
+      <% if (user.github_url) { %><span style="margin-right: 16px;">GitHub: <%= user.github_url %></span><% } %>
+      <% if (user.linkedin_url) { %><span>LinkedIn: <%= user.linkedin_url %></span><% } %>
+    </p>
+  </div>
+
+  <!-- Client Info -->
+  <% if (proposal.company) { %>
+    <div class="proposal-section">
+      <h4>To</h4>
+      <p><strong><%= proposal.company %></strong></p>
+      <% if (proposal.contact_name) { %><p><%= proposal.contact_name %></p><% } %>
+      <% if (proposal.lead_email) { %><p>&#9993; <%= proposal.lead_email %></p><% } %>
+    </div>
+  <% } %>
+
+  <!-- Project Scope -->
+  <div class="proposal-section">
+    <h4>Project Scope</h4>
+    <p><%= proposal.description %></p>
+  </div>
+
+  <!-- Technical Approach -->
+  <div class="proposal-section">
+    <h4>Technical Approach</h4>
+    <ul>
+      <% approachBullets.forEach(bullet => { %>
+        <li><%= bullet %></li>
+      <% }) %>
+    </ul>
+    <% if (proposal.tech_stack) { %>
+      <p style="margin-top: 12px;"><strong>Technology Stack:</strong> <%= proposal.tech_stack %></p>
+    <% } %>
+  </div>
+
+  <!-- Timeline & Milestones -->
+  <div class="proposal-section">
+    <h4>Timeline & Milestones</h4>
+    <p><strong>Total Duration:</strong> <%= proposal.timeline_weeks %> weeks</p>
+    <div class="milestone-list" style="margin-top: 12px;">
+      <% milestones.forEach((m, i) => { %>
+        <div class="milestone-item">
+          <div class="milestone-check" style="cursor: default;"><%= i + 1 %></div>
+          <div class="milestone-content">
+            <div class="milestone-title"><%= m.title %></div>
+            <div class="milestone-date">Due: <%= new Date(m.date).toLocaleDateString() %></div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- Cost Breakdown -->
+  <div class="proposal-section">
+    <h4>Investment</h4>
+    <div class="cost-breakdown">
+      <div class="cost-row">
+        <span>Estimated Hours</span>
+        <span><%= proposal.estimated_hours %> hours</span>
+      </div>
+      <div class="cost-row">
+        <span>Hourly Rate</span>
+        <span>$<%= proposal.hourly_rate %>/hr</span>
+      </div>
+      <div class="cost-row">
+        <span>Subtotal</span>
+        <span>$<%= (proposal.estimated_hours * proposal.hourly_rate).toLocaleString() %></span>
+      </div>
+      <div class="cost-row total">
+        <span>Total Project Investment</span>
+        <span>$<%= totalCost.toLocaleString() %></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Terms -->
+  <div class="proposal-section">
+    <h4>Payment Terms</h4>
+    <p>
+      <% if (proposal.payment_terms === '50% upfront') { %>
+        50% upfront payment ($<%= (totalCost * 0.5).toLocaleString() %>) to begin work, with the remaining 50% ($<%= (totalCost * 0.5).toLocaleString() %>) due upon completion.
+      <% } else if (proposal.payment_terms === '30-70 split') { %>
+        30% upfront ($<%= (totalCost * 0.3).toLocaleString() %>) to begin, 70% ($<%= (totalCost * 0.7).toLocaleString() %>) upon delivery.
+      <% } else if (proposal.payment_terms === 'milestone-based') { %>
+        Payments tied to milestone completions as outlined in the timeline section above.
+      <% } else if (proposal.payment_terms === 'net-30') { %>
+        Net-30 terms — full amount due within 30 days of invoice date.
+      <% } else { %>
+        <%= proposal.payment_terms %>
+      <% } %>
+    </p>
+  </div>
+
+  <!-- Call to Action -->
+  <div class="proposal-section" style="text-align: center; padding-top: 20px; border-top: 1px solid var(--border);">
+    <h4 style="margin-bottom: 12px;">Ready to Move Forward?</h4>
+    <p style="margin-bottom: 20px;">Contact <%= user.name %> at <%= user.email %> to accept this proposal or discuss any adjustments.</p>
+    <p style="color: var(--text-muted); font-size: 0.85rem;">This proposal is valid for 30 days from the date of issue.</p>
+  </div>
+</div>
+
+<!-- Action Buttons -->
+<div style="display: flex; gap: 12px; justify-content: center; margin-top: 24px;">
+  <button class="btn btn-secondary" onclick="copyToClipboard()">
+    &#9998; Copy to Clipboard
+  </button>
+  <button class="btn btn-primary" onclick="downloadHTML()">
+    &#8681; Download as HTML
+  </button>
+</div>
+
+<script>
+  function copyToClipboard() {
+    const content = document.getElementById('proposalContent').innerText;
+    navigator.clipboard.writeText(content).then(() => {
+      alert('Proposal copied to clipboard!');
+    }).catch(() => {
+      // Fallback
+      const textarea = document.createElement('textarea');
+      textarea.value = content;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      alert('Proposal copied to clipboard!');
+    });
+  }
+
+  function downloadHTML() {
+    const content = document.getElementById('proposalContent').outerHTML;
+    const style = document.querySelector('link[href="/css/main.css"]');
+    
+    let cssText = '';
+    if (style) {
+      // For simplicity, embed basic styles
+      cssText = `
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #06101F; color: #E8EDF3; padding: 40px; line-height: 1.6; }
+        .proposal-preview { background: #0B1A30; border: 1px solid #1A3552; border-radius: 10px; padding: 40px; max-width: 800px; margin: 0 auto; }
+        .proposal-header { text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #00E5B4; }
+        .proposal-section { margin-bottom: 24px; }
+        h2 { color: #00E5B4; } h4 { color: #5A6E82; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+        .milestone-list { display: flex; flex-direction: column; gap: 10px; }
+        .milestone-item { display: flex; gap: 12px; padding: 12px; background: #06101F; border: 1px solid #1A3552; border-radius: 6px; }
+        .cost-breakdown { background: #06101F; border-radius: 6px; padding: 20px; }
+        .cost-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1A3552; }
+        .cost-row.total { font-weight: 700; color: #00E5B4; border-top: 2px solid #00E5B4; }
+      `;
+    }
+    
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title><%= proposal.title %> - Proposal</title><style>${cssText}</style></head><body>${content}</body></html>`;
+    
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'proposal-<%= proposal.title.toLowerCase().replace(/\\s+/g, '-') %>.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+</script>
